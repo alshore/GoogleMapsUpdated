@@ -31,6 +31,8 @@ public class Main {
         try {
             GeoApiContext context = new GeoApiContext().setApiKey(key);
             GeocodingApiRequest locationRequest = new GeocodingApiRequest(context);
+            GeocodingApiRequest locationRequest2 = new GeocodingApiRequest(context);
+
             System.out.println("Enter a city to see its latitude and longitude.");
             String location = stringScanner.nextLine();
 
@@ -67,10 +69,11 @@ public class Main {
                 System.out.println("Be more specific please");
                 String addedInfo = stringScanner.nextLine();
                 ArrayList<String> addy2 = new ArrayList<>();
-                GeocodingResult[] geocodingResultsArray2 = new GeocodingResult[]{};
-                for (int i = 0; i < geocodingResultsArray.length; i++) {
-                    geocodingResultsArray2 =locationRequest.address(addedInfo).await();
-                    GeocodingResult secondGeocodingResult = geocodingResultsArray[i];
+                //GeocodingResult[] geocodingResultsArray2 = new GeocodingResult[]{};
+                GeocodingResult[] geocodingResultsArray2 = locationRequest2.address(addedInfo).await();
+                for (int i = 0; i < geocodingResultsArray2.length; i++) {
+
+                    GeocodingResult secondGeocodingResult = geocodingResultsArray2[i];
                     LatLng latLng = secondGeocodingResult.geometry.location;
                     String LatLng = secondGeocodingResult.formattedAddress;
                     addy2.add(LatLng);
