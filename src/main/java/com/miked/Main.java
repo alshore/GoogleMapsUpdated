@@ -28,57 +28,60 @@ public class Main {
             System.out.println("No key file found, or could not be read.");
             System.exit(-1);
         }
-        GeoApiContext context = new GeoApiContext().setApiKey(key);
-        GeocodingApiRequest locationRequest = new GeocodingApiRequest(context);
-        System.out.println("Enter a city to see its latitude and longitude.");
-        String location = stringScanner.nextLine();
-        //String baseURL = String.format("https://maps.googleapi.com/maps/api/geocode/json?address=%s&key=%s", location, key);
+        try {
+            GeoApiContext context = new GeoApiContext().setApiKey(key);
+            GeocodingApiRequest locationRequest = new GeocodingApiRequest(context);
+            System.out.println("Enter a city to see its latitude and longitude.");
+            String location = stringScanner.nextLine();
 
-        //geocodingResultsArray
-        GeocodingResult[] geocodingResultsArray = locationRequest.address(location).await();
-        //System.out.println(baseURL);
-        //System.out.println(geocodingResults[0]);
-        Bounds bounds = new Geometry().bounds;
-        //System.out.println(locationRequest);
-        //System.out.println("array"+geocodingResultsArray[1]);
-        //todo loop over geocodingResultsArray.  formattedAddress.
-        ArrayList<String> addy = new ArrayList<>();
-        if (geocodingResultsArray.length > 0) {
-            for(int i =0; i<geocodingResultsArray.length; i++) {
-                GeocodingResult firstGeocodingResult = geocodingResultsArray[i];
-                LatLng latlong = firstGeocodingResult.geometry.location;//geometry and location are tags under "GeocodingResult".
-                String LatLong = latlong.toString();
-                LatLong = firstGeocodingResult.formattedAddress;
-                addy.add(LatLong);
-                System.out.println(latlong);
-                System.out.println(LatLong);
-                System.out.println(addy.get(i));
-                //todo - Use the latlong object to make an elevation request.
-                ElevationResult[] elevationResultsArray = ElevationApi.getByPoints(context, latlong).await();
+            GeocodingResult[] geocodingResultsArray = locationRequest.address(location).await();
+
+
+            Bounds bounds = new Geometry().bounds;
+
+            ArrayList<String> addy = new ArrayList<>();
+            if (geocodingResultsArray.length > 0) {
+                for (int i = 0; i < geocodingResultsArray.length; i++) {
+                    GeocodingResult firstGeocodingResult = geocodingResultsArray[i];
+                    LatLng latlong = firstGeocodingResult.geometry.location;//geometry and location are tags under "GeocodingResult".
+                    String LatLong = firstGeocodingResult.formattedAddress;
+
+                    addy.add(LatLong);
+                    System.out.println(latlong);
+                    System.out.println(LatLong);
+                    System.out.println(addy.get(i));
+                    //todo - Use the latlong object to make an elevation request.
+                    ElevationResult[] elevationResultsArray = ElevationApi.getByPoints(context, latlong).await();
+
+                }
+            } else {
+                System.out.println("No results found");
+                //todo ask user again, or whatever
             }
-        } else {
-            System.out.println("No results found");
-            //todo ask user again, or whatever
-        }
-        System.out.println(addy);
-        System.out.println("Was your location in the list? (y or n)");
-        String searchSucessful = stringScanner.nextLine();
-            if(searchSucessful.equalsIgnoreCase("n")){
+            System.out.println(addy);
+            System.out.println("Was your location in the list? (y or n)");
+            String searchSucessful = stringScanner.nextLine();
+            if (searchSucessful.equalsIgnoreCase("n")) {
+
+
                 System.out.println("Be more specific please");
                 String addedInfo = stringScanner.nextLine();
-                geocodingResultsArray = locationRequest.address(addedInfo).await();
-                for (int i =0; i < geocodingResultsArray.length; i++){
+                ArrayList<String> addy2 = new ArrayList<>();
+                GeocodingResult[] geocodingResultsArray2 = new GeocodingResult[]{};
+                for (int i = 0; i < geocodingResultsArray.length; i++) {
+                    geocodingResultsArray2 =locationRequest.address(addedInfo).await();
                     GeocodingResult secondGeocodingResult = geocodingResultsArray[i];
                     LatLng latLng = secondGeocodingResult.geometry.location;
-                    String LatLng = latLng.toString();
-                    LatLng = secondGeocodingResult.formattedAddress;
-                    addy.add(LatLng);
+                    String LatLng = secondGeocodingResult.formattedAddress;
+                    addy2.add(LatLng);
                     System.out.println(latLng);
                     System.out.println(LatLng);
                     System.out.println(addy.get(i));
                 }
             }
-
+        }catch (Exception exc){
+            System.out.println(exc);
+        }
 
 
 //public class Main {
